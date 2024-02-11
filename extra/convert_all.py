@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 
+# Example:
+# python .\convert_all.py "C:\Users\jonas\Downloads\mpqeditor_en\x64\Work"
+
 import os
 import sys
 import subprocess
-import select
 from optparse import OptionParser
-
 
 # Setup of the command-line arguments parser
 text = "Usage: %prog [options] <root-folder>\n\nConvert (in-place) all the BLP files in <root-folder> and its subdirectories"
@@ -23,7 +24,7 @@ parser.add_option("--verbose", action="store_true", default=False,
 
 # Check the parameters
 if len(args) != 1:
-    print "No root folder provided"
+    print("No root folder provided")
     sys.exit(-1)
 
 root_folder = args[0]
@@ -33,7 +34,7 @@ if root_folder[-1] != os.path.sep:
 try:
     subprocess.Popen('%s --help' % options.converter, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 except:
-    print "Can't execute BLPConverter at '%s'" % options.converter
+    print("Can't execute BLPConverter at '%s'" % options.converter)
     sys.exit(-1)
     
 
@@ -42,11 +43,11 @@ counter_success_total = 0
 failed_total = []
 for root, dirs, files in os.walk(root_folder):
     if root == root_folder:
-        print "Processing '.'..."
+        print("Processing '.'...")
     else:
-        print "Processing '%s'..." % root[len(root_folder):]
+        print("Processing '%s'..." % root[len(root_folder):])
 
-    blps = filter(lambda x: x.lower().endswith('.blp'), files)
+    blps = list(filter(lambda x: x.lower().endswith('.blp'), files))
 
     counter_failed = 0
 
@@ -58,19 +59,19 @@ for root, dirs, files in os.walk(root_folder):
         while len(to_convert) > 0:
             p = subprocess.Popen('%s %s' % (options.converter, ' '.join([ '"%s"' % image for image in to_convert[0:10] ])), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             p.wait()
-            output = p.stdout.read()
+            output = p.stdout.read().decode('utf-8')
             
-            failed = filter(lambda x: not(x.endswith(': OK')) and (len(x) > 0), output.split('\n'))
+            failed = list(filter(lambda x: not(x.endswith(': OK')) and (len(x) > 0), output.split('\n')))
             counter_failed += len(failed)
 
             failed_total.extend(failed)
 
             if options.verbose:
-                print '    * ' + output[:-1].replace('\n', '\n    * ')
+                print('    * ' + output[:-1].replace('\n', '\n    * '))
 
             if options.remove:
-                failed2 = map(lambda x: x[0:x.find(':')], failed)
-                done = filter(lambda x: (x not in failed2) and (len(x) > 0), to_convert[0:10])
+                failed2 = list(map(lambda x: x[0:x.find(':')], failed))
+                done = list(filter(lambda x: (x not in failed2) and (len(x) > 0), to_convert[0:10]))
                 p = subprocess.Popen('rm -f %s' % (' '.join([ '"%s"' % image for image in done ])), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
                 p.wait()
 
@@ -79,20 +80,20 @@ for root, dirs, files in os.walk(root_folder):
         os.chdir(current)
 
     if counter_failed > 0:
-        print '%d images converted, %d images not converted' % (len(blps) - counter_failed, counter_failed)
+        print('%d images converted, %d images not converted' % (len(blps) - counter_failed, counter_failed))
     else:
-        print '%d images converted' % (len(blps) - counter_failed)
-    print
+        print('%d images converted' % (len(blps) - counter_failed))
+    print()
 
     counter_success_total += len(blps) - counter_failed
 
-print '----------------------------------------------------------'
+print('----------------------------------------------------------')
 
 if len(failed_total) > 0:
-    print 'TOTAL: %d images converted, %d images not converted' % (counter_success_total, len(failed_total))
-    print
-    print 'Images not converted:'
+    print('TOTAL: %d images converted, %d images not converted' % (counter_success_total, len(failed_total)))
+    print()
+    print('Images not converted:')
     for image in failed_total:
-        print '    * ' + image
+        print('    * ' + image)
 else:
-    print 'TOTAL: %d images converted' % counter_success_total
+    print('TOTAL: %d images converted' % counter_success_total)

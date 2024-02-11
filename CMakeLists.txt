@@ -1,6 +1,6 @@
 project(BLPCONVERTER)
 cmake_minimum_required(VERSION 2.6)
-
+set (CMAKE_CXX_STANDARD 11)
 
 ##########################################################################################
 # Options
@@ -23,6 +23,7 @@ add_subdirectory(dependencies)
 
 include_directories("${BLPCONVERTER_SOURCE_DIR}/dependencies/include/"
                     "${BLPCONVERTER_SOURCE_DIR}/dependencies/FreeImage/"
+					#"${BLPCONVERTER_SOURCE_DIR}/dependencies/freeimage/"
                     "${BLPCONVERTER_SOURCE_DIR}/dependencies/squish/"
 )
 

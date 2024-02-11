@@ -61,15 +61,21 @@ Attribute::~Attribute () {}
 
 namespace {
 
-struct NameCompare: std::binary_function <const char *, const char *, bool>
+//struct NameCompare: std::binary_function <const char *, const char *, bool>
+//{
+//    bool
+//    operator () (const char *x, const char *y) const
+//    {
+//	return strcmp (x, y) < 0;
+//    }
+//};
+struct NameCompare
 {
-    bool
-    operator () (const char *x, const char *y) const
+    bool operator() (const char *x, const char *y) const
     {
-	return strcmp (x, y) < 0;
+        return strcmp(x, y) < 0;
     }
 };
-
 
 typedef Attribute* (*Constructor)();
 typedef std::map <const char *, Constructor, NameCompare> TypeMap;
