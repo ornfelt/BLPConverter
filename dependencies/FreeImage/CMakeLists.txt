@@ -303,6 +303,16 @@ set(SRCS FreeImage/BitmapAccess.cpp
          ZLib/zutil.c
 )
 
+# To avoid:
+# dcraw/dcraw.c:6859:31: error: constant expression evaluates to 63472 which cannot be narrowed to type 'short' [-Wc++11-narrowing]
+#     { "Panasonic DMC-LX1", 0, 0xf7f0,   /* aka "LEICA D-LUX2" */
+#                               ^~~~~~
+# dcraw/dcraw.c:6859:31: note: insert an explicit cast to silence this issue
+#     { "Panasonic DMC-LX1", 0, 0xf7f0,   /* aka "LEICA D-LUX2" */
+#                               ^~~~~~
+#                               static_cast<short>( )
+add_compile_options(-Wno-narrowing)
+
 # List the include paths
 include_directories(. DeprecationManager LibRawLite OpenEXR OpenEXR/Half OpenEXR/Iex OpenEXR/IlmImf OpenEXR/Imath OpenEXR/IlmThread ZLib)
 
