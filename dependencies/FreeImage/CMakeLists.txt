@@ -312,6 +312,7 @@ set(SRCS FreeImage/BitmapAccess.cpp
 #                               ^~~~~~
 #                               static_cast<short>( )
 add_compile_options(-Wno-narrowing)
+add_compile_options(-w -fPIC -Wno-incompatible-pointer-types)
 
 # List the include paths
 include_directories(. DeprecationManager LibRawLite OpenEXR OpenEXR/Half OpenEXR/Iex OpenEXR/IlmImf OpenEXR/Imath OpenEXR/IlmThread ZLib)
